@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+    ledger-db:
+        image: postgres:17-alpine
+        environment:
+            POSTGRES_HOST_AUTH_METHOD: trust
+        volumes:
+            - db-data:/var/lib/postgresql/data
+    ledger-web:
+        image: unitystation/ledger:latest
+        environment:
+            - DEBUG=0
+        env_file: ./.env
+        expose:
+            - 8000
+        command: gunicorn ledger.wsgi:application --bind 0.0.0.0:8000
+        volumes:
+            - static-volume:/home/website/statics
+            - media-volume:/home/website/media
+
+volumes:
+    db-data:

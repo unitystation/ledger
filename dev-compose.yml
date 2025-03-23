@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+    ledger-db:
+        image: postgres:17-alpine
+        environment:
+            POSTGRES_HOST_AUTH_METHOD: trust
+        volumes:
+            - db-data:/var/lib/postgresql/data
+        ports:
+            - "5432:5432"
+    ledger-web:
+        depends_on:
+            - db
+        build: .
+        env_file: ./.env
+        ports:
+            - "8000:8000"
+        volumes:
+            - ./src:/src
+        command: python manage.py runserver 0.0.0.0:8000
+
+volumes:
+    db-data:
+
