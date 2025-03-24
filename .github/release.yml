@@ -1,0 +1,38 @@
+name: Release
+on:
+    push:
+        tags:
+            - "v*"
+
+env:
+    IMAGE_NAME: unitystation/ledger
+jobs:
+    docker:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v4
+
+            -   name: Extract Tag Name
+                id: extract_tag
+                run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+
+            -   name: Build docker image with tag
+                run: |
+                    docker pull $IMAGE_NAME:latest
+                    docker build --pull --cache-from $IMAGE_NAME:latest -t $IMAGE_NAME:${{ steps.extract_tag.outputs.tag }} .
+
+            -   name: Tag image as stable
+                run: |
+                    docker tag $IMAGE_NAME:${{ steps.extract_tag.outputs.tag }} $IMAGE_NAME:stable
+
+            -   name: Log in into Docker Hub
+                run: |
+                    echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+            -   name: Push tagged image to registry
+                run: |
+                    docker push $IMAGE_NAME:${{ steps.extract_tag.outputs.tag }}
+
+            -   name: Push stable image to registry
+                run: |
+                    docker push $IMAGE_NAME:stable
