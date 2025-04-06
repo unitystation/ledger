@@ -1,6 +1,5 @@
 from rest_framework import serializers
 
-from .calc import recalculate_balances
 from ..models import Movement
 
 
@@ -12,5 +11,4 @@ class MoneyMovementSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         instance = Movement.objects.create(**validated_data)
-        recalculate_balances()
         return instance
