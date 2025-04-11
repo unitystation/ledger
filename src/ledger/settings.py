@@ -26,7 +26,13 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "foo")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DJANGO_DEBUG", default="1"))
 
-ALLOWED_HOSTS = ["*"] if DEBUG else ["localhost", "127.0.0.1", "https://ledger.unitystation.org"]
+ALLOWED_HOSTS = ["*"] if DEBUG else ["localhost", "127.0.0.1", "ledger.unitystation.org"]
+
+# CSRF
+CSRF_TRUSTED_ORIGINS = ['https://ledger.unitystation.org']
+CORS_ORIGIN_ALLOW_ALL = DEBUG
+CORS_ALLOWED_ORIGINS = ['https://ledger.unitystation.org']
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
