@@ -14,75 +14,75 @@ jobs:
     lint:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            - uses: astral-sh/setup-uv@v3
-              with:
-                version: "0.4.24"
-                enable-cache: true
+            -   uses: actions/checkout@v4
+            -   uses: astral-sh/setup-uv@v3
+                with:
+                    version: "0.4.24"
+                    enable-cache: true
 
-            - name: pre-commit cache key
-              run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
+            -   name: pre-commit cache key
+                run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
 
-            - uses: actions/cache@v4
-              with:
-                  path: ~/.cache/pre-commit
-                  key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
+            -   uses: actions/cache@v4
+                with:
+                    path: ~/.cache/pre-commit
+                    key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
 
-            - name: Install Python
-              run: uv python install
+            -   name: Install Python
+                run: uv python install
 
-            - name: install dependencies
-              run: uv sync
+            -   name: install dependencies
+                run: uv sync
 
             # https://github.com/typeddjango/django-stubs/issues/458
-            - name: create .env file
-              run: cp example.env .env
+            -   name: create .env file
+                run: cp example.env .env
 
     unit_test:
         needs: [ lint ]
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            - uses: astral-sh/setup-uv@v3
-              with:
-                version: "0.4.24"
-                enable-cache: true
+            -   uses: actions/checkout@v4
+            -   uses: astral-sh/setup-uv@v3
+                with:
+                    version: "0.4.24"
+                    enable-cache: true
 
-            - name: Set up Python
-              run: uv python install
+            -   name: Set up Python
+                run: uv python install
 
-            - name: install dependencies
-              run: uv sync
+            -   name: install dependencies
+                run: uv sync
 
-            - name: create .env file
-              run: cp example.env .env
+            -   name: create .env file
+                run: cp example.env .env
 
-            - name: Run tests
-              env:
-                  SECRET_KEY: secret
-                  DB_ENGINE: django.db.backends.sqlite3
-              run: |
-                  cd src
-                  uv run manage.py makemigrations --check
-                  uv run manage.py migrate
-                  uv run manage.py test tests/
+            -   name: Run tests
+                env:
+                    SECRET_KEY: secret
+                    DB_ENGINE: django.db.backends.sqlite3
+                run: |
+                    cd src
+                    uv run manage.py makemigrations --check
+                    uv run manage.py migrate
+                    uv run manage.py test
 
     docker:
         needs: [ lint, unit_test ]
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            - name: Build docker image
-              run: |
-                  docker pull $IMAGE_NAME
-                  docker build --pull --cache-from $IMAGE_NAME -t $IMAGE_NAME:latest .
+            -   uses: actions/checkout@v4
+            -   name: Build docker image
+                run: |
+                    docker pull $IMAGE_NAME
+                    docker build --pull --cache-from $IMAGE_NAME -t $IMAGE_NAME:latest .
 
-            - name: Log in into Docker Hub
-              if: ${{ github.event_name == 'push' }}
-              run: |
-                  echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+            -   name: Log in into Docker Hub
+                if: ${{ github.event_name == 'push' }}
+                run: |
+                    echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-            - name: Push image to registry
-              if: ${{ github.event_name == 'push' }}
-              run: |
-                  docker push $IMAGE_NAME
+            -   name: Push image to registry
+                if: ${{ github.event_name == 'push' }}
+                run: |
+                    docker push $IMAGE_NAME
