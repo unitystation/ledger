@@ -9,7 +9,7 @@ from django.utils.html import format_html
 @admin.register(Movement)
 class MovementAdmin(admin.ModelAdmin):
     readonly_fields = ('balance_after',)
-    list_display = ('type', 'description', 'amount_usd', 'balance_after', 'created_at')  # optional, shows these columns in the list view
+    list_display = ('description', 'type', 'amount_usd', 'balance_after', 'created_at')
 
     def get_changeform_initial_data(self, request):
         return {
