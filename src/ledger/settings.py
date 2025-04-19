@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "foo")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DJANGO_DEBUG", default="1"))
 
-ALLOWED_HOSTS = ["*"] if DEBUG else ["localhost", "127.0.0.1", "ledger.unitystation.org"]
+ALLOWED_HOSTS = ["*"]
 
 # CSRF
 CSRF_TRUSTED_ORIGINS = ['https://ledger.unitystation.org']
