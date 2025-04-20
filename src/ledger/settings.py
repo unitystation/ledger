@@ -26,12 +26,15 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "foo")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get("DJANGO_DEBUG", default="1"))
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*"] if DEBUG else ["ledger.unitystation.org"]
 
 # CSRF
 CSRF_TRUSTED_ORIGINS = ['https://ledger.unitystation.org']
-CORS_ORIGIN_ALLOW_ALL = DEBUG
-CORS_ALLOWED_ORIGINS = ['https://ledger.unitystation.org']
+
+# CORS
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_METHODS = ["GET", "HEAD", "OPTIONS"]
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
@@ -44,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     'transactions',
     'drf_spectacular'
@@ -51,6 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
